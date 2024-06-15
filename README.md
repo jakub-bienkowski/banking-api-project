@@ -8,10 +8,9 @@ Logging configuration is available in src/dev/logback.xml. Logs are stored in ta
 The application is available only as a REST API. GUI is not implemented.
 Available endpoints: 
 1) HTTP GET { base_path }/users/{ user_id } -> retrieves user information
-2) HHTP POST  { base_path }/accounts -> saves new accounts
+2) HTTP POST  { base_path }/accounts -> saves new accounts
 Request body structure: 
 {
 	"customerId": string,
 	"initialCredit: number
-}
 }
