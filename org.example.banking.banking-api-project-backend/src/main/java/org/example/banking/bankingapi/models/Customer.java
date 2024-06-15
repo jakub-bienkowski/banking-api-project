@@ -12,6 +12,6 @@ public class Customer {
     private final String id;
     private final String name;
     private final String surname;
-    private final List<Account> accounts;
+    private final List<String> accountsIds;
 
 }

@@ -15,16 +15,15 @@ public class InMemoryAccountRepository implements AccountRepository {
 
     private final Map<String, Account> accounts =  new ConcurrentHashMap<>();
 
-
     @Override
     public Mono<Account> save(@Nonnull final Account account) {
-        accounts.put(account.getCustomerId(), account);
+        accounts.put(account.getId(), account);
         return Mono.just(account);
     }
 
     @Override
-    public Mono<Account> findByCustomerId(String customerId) {
-        return Mono.justOrEmpty(accounts.get(customerId));
+    public Mono<Account> findById(String accountId) {
+        return Mono.justOrEmpty(accounts.get(accountId));
     }
 
 }
