@@ -72,8 +72,8 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(customer.getId())
                 .name(customer.getName())
                 .surname(customer.getSurname())
-                .accounts(new ArrayList<>())
                 .accountsIds(customer.getAccountsIds())
+                .accounts(new ArrayList<>())
                 .build();
     }
 
