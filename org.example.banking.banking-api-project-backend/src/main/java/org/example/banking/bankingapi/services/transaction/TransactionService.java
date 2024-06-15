@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 public interface TransactionService {
 
     Mono<TransactionDTO> performTransaction(TransactionDTO transactionDTO);
-    Flux<TransactionDTO> getTransactionsForAccount(String accountId);
+    Flux<TransactionDTO> getTransactionsByAccountId(String accountId);
 
 }

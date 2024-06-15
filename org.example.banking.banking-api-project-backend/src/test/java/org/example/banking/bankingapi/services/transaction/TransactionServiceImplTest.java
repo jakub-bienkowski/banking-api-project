@@ -44,7 +44,7 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    public void testGetTransactionsForAccount() {
+    public void testGetTransactionsByAccountId() {
         // Perform a transaction
         TransactionDTO transactionDTO = TransactionDTO.builder()
                 .accountId("account1")
@@ -63,7 +63,7 @@ public class TransactionServiceImplTest {
                 .verifyComplete();
 
         // Get transactions for the account
-        Flux<TransactionDTO> transactions = transactionService.getTransactionsForAccount("account1");
+        Flux<TransactionDTO> transactions = transactionService.getTransactionsByAccountId("account1");
 
         StepVerifier.create(transactions)
                 .assertNext(transaction -> {

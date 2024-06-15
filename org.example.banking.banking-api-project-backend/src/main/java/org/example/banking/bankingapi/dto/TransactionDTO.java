@@ -1,5 +1,6 @@
 package org.example.banking.bankingapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,7 +13,9 @@ public class TransactionDTO {
 
     private final String id;
     private final BigDecimal amount;
-    private final String accountId;
     private final LocalDateTime timestamp;
+
+    @JsonIgnore
+    private final String accountId;
 
 }
