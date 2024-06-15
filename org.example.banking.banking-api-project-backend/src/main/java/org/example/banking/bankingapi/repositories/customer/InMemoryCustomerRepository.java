@@ -27,6 +27,12 @@ public class InMemoryCustomerRepository implements CustomerRepository {
     }
 
     @Override
+    public Mono<Customer> save(@Nonnull final Customer customer) {
+        customers.put(customer.getId(), customer);
+        return Mono.just(customer);
+    }
+
+    @Override
     public Mono<Customer> findById(String customerId) {
         return Mono.justOrEmpty(customers.get(customerId));
     }

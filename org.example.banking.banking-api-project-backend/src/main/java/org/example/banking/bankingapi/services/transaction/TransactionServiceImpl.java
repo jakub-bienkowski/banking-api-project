@@ -49,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Flux<TransactionDTO> getTransactionsForAccount(@Nonnull final String accountId) {
+    public Flux<TransactionDTO> getTransactionsByAccountId(@Nonnull final String accountId) {
         return transactionRepository.findByAccountId(accountId)
                 .map(this::mapToTransactionDTO);
     }
