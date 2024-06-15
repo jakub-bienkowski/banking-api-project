@@ -6,5 +6,16 @@ spring:
     basePath: /banking-api
 
 banking-api:
-  initialClients:
-    -
+  initialCustomers:
+    - id: 1
+      name: John
+      surname: Doe
+    - id: 2
+      name: Jane
+      surname: Doe
+    - id: 3
+      name: Alice
+      surname: Smith
+    - id: 4
+      name: Bob
+      surname: Smith
