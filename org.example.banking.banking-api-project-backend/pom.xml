@@ -218,6 +218,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-maven.plugin}</version>
+                <configuration>
+                    <jvmArguments>
+                        -Dspring.config.location=src/dev/ -Dlogging.config=src/dev/logback.xml
+                    </jvmArguments>
+                </configuration>
                 <executions>
                     <execution>
                         <id>spring-boot-repackage</id>
