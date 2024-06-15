@@ -5,8 +5,10 @@ import org.example.banking.bankingapi.exceptions.CustomerNotFoundException;
 import org.example.banking.bankingapi.models.Customer;
 import org.example.banking.bankingapi.dto.CustomerDTO;
 import org.example.banking.bankingapi.repositories.customer.InMemoryCustomerRepository;
+import org.example.banking.bankingapi.services.account.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -38,7 +40,7 @@ public class CustomerServiceImplTest {
                         .build());
 
         InMemoryCustomerRepository customerRepository = new InMemoryCustomerRepository(initialCustomers);
-        customerService = new CustomerServiceImpl(customerRepository);
+        customerService = new CustomerServiceImpl(customerRepository, Mockito.mock(AccountService.class));
     }
 
     @Test
