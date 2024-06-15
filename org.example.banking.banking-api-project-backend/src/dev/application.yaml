@@ -1,0 +1,10 @@
+server:
+  port: 8085
+
+spring:
+  webflux:
+    basePath: /banking-api
+
+banking-api:
+  initialClients:
+    -

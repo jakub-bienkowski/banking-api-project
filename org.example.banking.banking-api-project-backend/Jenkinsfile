@@ -1,0 +1,83 @@
+#!groovy
+
+pipeline {
+
+    environment {
+        RCP_LIST = 'jbienkowski94@gmail.com'
+        jdk = 'OpenJDK 21'
+    }
+
+    parameters {
+        booleanParam(name: 'DEPENDENCY_CHECK', defaultValue: false, description: 'Check project dependencies for known CVEs.')
+    }
+
+    agent {
+        node {
+            label 'java'
+        }
+    }
+
+    tools {
+        maven 'maven'
+        jdk 'OpenJDK 21'
+    }
+
+    triggers {
+        // To be implemented based on repository configuration
+    }
+
+    stages {
+        stage('Build: Project') {
+            steps {
+                script {
+                    withMaven(
+                        // Maven installation declared in the Jenkins
+                    ) {
+                         if (params.DEPENDENCY_CHECK == true) {
+                            sh 'mvn clean verify -P dependency-check'
+                            dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                        } else {
+                            sh 'mvn clean verify spotbugs:spotbugs'
+                        }
+                        junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+                        /* publish JaCoCo results */
+                        jacoco execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java'
+                        /* publish spotbugs results */
+                        recordIssues enabledForFailure: true, tool: spotBugs()
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    withMaven(
+                           // Maven installation declared in the Jenkins
+                    ) {
+                        echo 'Cleaning workspace'
+                        sh 'mvn clean'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        fixed {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+            mail to: "${RCP_LIST}", subject: "Build fixed for job ${env.JOB_NAME}", body: "Build fixed."
+        }
+        failure {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+            mail to: "${RCP_LIST}", subject: "Build failed for job ${env.JOB_NAME}", body: "Build failed. Check ${env.BUILD_URL}"
+        }
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+            mail to: "${RCP_LIST}", subject: "Build unstable for job ${env.JOB_NAME}", body: "Build unstable. Check ${env.BUILD_URL}"
+        }
+    }
+}
