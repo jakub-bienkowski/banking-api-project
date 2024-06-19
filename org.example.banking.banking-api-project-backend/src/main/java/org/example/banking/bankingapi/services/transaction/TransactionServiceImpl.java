@@ -6,7 +6,6 @@ import org.example.banking.bankingapi.models.Transaction;
 import org.example.banking.bankingapi.repositories.transaction.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -23,23 +22,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Mono<TransactionDTO> performTransaction(@Nonnull final TransactionDTO transactionDTO) {
-        return this.saveTransaction(transactionDTO)
-                .map(this::mapToTransactionDTO);
+    public Mono<TransactionDTO> findById(@Nonnull final String accountId) {
+        return transactionRepository.findById(accountId)
+                .map(this::mapToDto);
     }
 
-    public Mono<Transaction> saveTransaction(@Nonnull final TransactionDTO transactionDTO) {
-        final Transaction transaction = Transaction.builder()
-                .id(UUID.randomUUID().toString())
-                .accountId(transactionDTO.getAccountId())
-                .amount(transactionDTO.getAmount())
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        return transactionRepository.save(transaction);
+    @Override
+    public Mono<TransactionDTO> save(@Nonnull final TransactionDTO transactionDTO) {
+        return transactionRepository.save(mapToModel(transactionDTO))
+                .map(this::mapToDto);
     }
 
-    private TransactionDTO mapToTransactionDTO(@Nonnull final Transaction transaction) {
+    private TransactionDTO mapToDto(@Nonnull final Transaction transaction) {
         return TransactionDTO.builder()
                 .id(transaction.getId())
                 .accountId(transaction.getAccountId())
@@ -48,9 +42,13 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
     }
 
-    @Override
-    public Flux<TransactionDTO> getTransactionsByAccountId(@Nonnull final String accountId) {
-        return transactionRepository.findByAccountId(accountId)
-                .map(this::mapToTransactionDTO);
+    private Transaction mapToModel(TransactionDTO transactionDTO) {
+        return Transaction.builder()
+                .id(UUID.randomUUID().toString())
+                .accountId(transactionDTO.getAccountId())
+                .amount(transactionDTO.getAmount())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
+
 }

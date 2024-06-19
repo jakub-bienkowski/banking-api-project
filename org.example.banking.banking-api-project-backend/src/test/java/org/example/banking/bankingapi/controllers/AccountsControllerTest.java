@@ -1,7 +1,7 @@
 package org.example.banking.bankingapi.controllers;
 
 import org.example.banking.bankingapi.dto.AccountDTO;
-import org.example.banking.bankingapi.dto.requests.AddAccountRequest;
+import org.example.banking.bankingapi.dto.requests.AccountCreationRequest;
 import org.example.banking.bankingapi.services.account.AccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,9 @@ public class AccountsControllerTest {
 
     @Test
     public void testCreateAccount() {
-        AddAccountRequest request = new AddAccountRequest("test-customer-id", new BigDecimal("1000"));
+        AccountCreationRequest request = new AccountCreationRequest("test-customer-id", new BigDecimal("1000"));
 
-        when(accountService.createAccount(any(AddAccountRequest.class)))
+        when(accountService.createAccount(any(AccountCreationRequest.class)))
                 .thenReturn(Mono.just(AccountDTO.builder().id("1").build()));
 
         webTestClient.post()

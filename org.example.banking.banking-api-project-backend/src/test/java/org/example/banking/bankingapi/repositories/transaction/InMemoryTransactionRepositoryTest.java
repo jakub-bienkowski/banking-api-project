@@ -34,10 +34,10 @@ public class InMemoryTransactionRepositoryTest {
     }
 
     @Test
-    public void testFindByAccountId() {
+    public void testFindById() {
         repository.save(transaction).block();
 
-        StepVerifier.create(repository.findByAccountId(transaction.getAccountId()))
+        StepVerifier.create(repository.findById(transaction.getAccountId()))
                 .assertNext(retrievedTransaction -> assertEquals(transaction, retrievedTransaction))
                 .verifyComplete();
     }

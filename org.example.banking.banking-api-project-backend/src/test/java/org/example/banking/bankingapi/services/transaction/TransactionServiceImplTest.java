@@ -25,14 +25,14 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    public void testPerformTransaction() {
+    public void testExecuteTransaction() {
         TransactionDTO transactionDTO = TransactionDTO.builder()
                 .accountId("account1")
                 .amount(new BigDecimal("50.00"))
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        Mono<TransactionDTO> performed = transactionService.performTransaction(transactionDTO);
+        Mono<TransactionDTO> performed = transactionService.executeTransaction(transactionDTO);
 
         StepVerifier.create(performed)
                 .assertNext(performedTransaction -> {
@@ -44,7 +44,7 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    public void testGetTransactionsByAccountId() {
+    public void testFindByAccountId() {
         // Perform a transaction
         TransactionDTO transactionDTO = TransactionDTO.builder()
                 .accountId("account1")
@@ -52,7 +52,7 @@ public class TransactionServiceImplTest {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        Mono<TransactionDTO> performed = transactionService.performTransaction(transactionDTO);
+        Mono<TransactionDTO> performed = transactionService.executeTransaction(transactionDTO);
 
         StepVerifier.create(performed)
                 .assertNext(performedTransaction -> {
@@ -63,7 +63,7 @@ public class TransactionServiceImplTest {
                 .verifyComplete();
 
         // Get transactions for the account
-        Flux<TransactionDTO> transactions = transactionService.getTransactionsByAccountId("account1");
+        Flux<TransactionDTO> transactions = transactionService.findByAccountId("account1");
 
         StepVerifier.create(transactions)
                 .assertNext(transaction -> {
