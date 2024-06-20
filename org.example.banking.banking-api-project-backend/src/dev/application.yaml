@@ -5,6 +5,8 @@ spring:
   webflux:
     basePath: /banking-api
 
+configType: "inMemory"
+
 banking-api:
   initialCustomers:
     - id: 1
