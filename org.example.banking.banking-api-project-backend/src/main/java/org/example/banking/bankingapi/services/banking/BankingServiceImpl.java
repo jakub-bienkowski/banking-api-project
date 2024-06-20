@@ -1,6 +1,7 @@
 package org.example.banking.bankingapi.services.banking;
 
 import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import org.example.banking.bankingapi.dto.AccountDTO;
 import org.example.banking.bankingapi.dto.CustomerDTO;
 import org.example.banking.bankingapi.dto.TransactionDTO;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 public class BankingServiceImpl implements BankingService {
 
@@ -35,6 +37,8 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public Mono<CustomerDTO> getCustomerDataById(String customerId) {
+        log.debug("Fetching customer data by id: {}", customerId);
+
         return customerService.findById(customerId)
                 .switchIfEmpty(Mono.error(new CustomerNotFoundException()))
                 .flatMap(this::enrichWithAccounts);
@@ -52,6 +56,8 @@ public class BankingServiceImpl implements BankingService {
     }
 
     private Mono<AccountDTO> enrichWithTransactions(AccountDTO account) {
+        log.debug("Fetching transactions for account: {}", account.getId());
+
         return Flux.fromIterable(account.getTransactionsIds())
                 .flatMap(transactionService::findById)
                 .collectList()
@@ -67,7 +73,7 @@ public class BankingServiceImpl implements BankingService {
                 .flatMap(this::createAccount)
                 .flatMap(account -> {
                     if (hasInitialCredit(request.getInitialCredit())) {
-                        return createInitialTransaction(account, request.getInitialCredit());
+                        return addTransaction(account, request.getInitialCredit());
                     } else {
                         return Mono.just(account);
                     }
@@ -88,7 +94,9 @@ public class BankingServiceImpl implements BankingService {
                 .then(Mono.just(savedAccount));
     }
 
-    private Mono<AccountDTO> createInitialTransaction(AccountDTO account, BigDecimal initialCredit) {
+    private Mono<AccountDTO> addTransaction(AccountDTO account, BigDecimal initialCredit) {
+        log.info("Adding transaction for account: {}. Amount: {} ", account.getId(), initialCredit);
+
         final TransactionDTO transaction = buildTransactionDTO(account, initialCredit);
 
         return transactionService.save(transaction)

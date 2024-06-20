@@ -2,7 +2,8 @@ package org.example.banking.bankingapi.controllers;
 
 import org.example.banking.bankingapi.dto.AccountDTO;
 import org.example.banking.bankingapi.dto.requests.AccountCreationRequest;
-import org.example.banking.bankingapi.services.account.AccountService;
+import org.example.banking.bankingapi.exceptions.CustomerNotFoundException;
+import org.example.banking.bankingapi.services.banking.BankingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(properties = "configType=inMemory")
 @AutoConfigureWebTestClient
 public class AccountsControllerTest {
 
@@ -25,13 +26,14 @@ public class AccountsControllerTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private AccountService accountService;
+    private BankingService bankingService;
 
     @Test
     public void testCreateAccount() {
         AccountCreationRequest request = new AccountCreationRequest("test-customer-id", new BigDecimal("1000"));
 
-        when(accountService.createAccount(any(AccountCreationRequest.class)))
+
+        when(bankingService.createAccount(any(AccountCreationRequest.class)))
                 .thenReturn(Mono.just(AccountDTO.builder().id("1").build()));
 
         webTestClient.post()
@@ -42,5 +44,21 @@ public class AccountsControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                 .jsonPath("$.id").isNotEmpty();
+    }
+
+    @Test
+    public void testBadRequest() {
+        AccountCreationRequest request = new AccountCreationRequest("test-customer-id", new BigDecimal("1000"));
+
+
+        when(bankingService.createAccount(any(AccountCreationRequest.class)))
+                .thenThrow(new CustomerNotFoundException());
+
+        webTestClient.post()
+                .uri("/accounts/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 }

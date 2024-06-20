@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -33,7 +32,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Mono<AccountDTO> save(@Nonnull final AccountDTO account) {
         return accountRepository.save(this.mapToModel(account))
-                .map(this::mapToDto);
+                .map(this::mapToDto)
+                .log();
     }
 
     private Account mapToModel(AccountDTO account) {

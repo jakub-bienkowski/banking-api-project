@@ -1,7 +1,8 @@
 package org.example.banking.bankingapi.controllers;
 
 import org.example.banking.bankingapi.dto.CustomerDTO;
-import org.example.banking.bankingapi.services.customer.CustomerService;
+import org.example.banking.bankingapi.exceptions.CustomerNotFoundException;
+import org.example.banking.bankingapi.services.banking.BankingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -14,7 +15,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(properties = "configType=inMemory")
 @AutoConfigureWebTestClient
 public class CustomersControllerTest {
 
@@ -22,11 +23,11 @@ public class CustomersControllerTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private CustomerService customerService;
+    private BankingService bankingService;
 
     @Test
     public void testGetUser() {
-        when(customerService.retrieveUserData(anyString()))
+        when(bankingService.getCustomerDataById(anyString()))
                 .thenReturn(Mono.just(CustomerDTO.builder().id("test-user-id").build()));
 
         webTestClient.get()
@@ -36,5 +37,17 @@ public class CustomersControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.id").isNotEmpty();
+    }
+
+    @Test
+    public void testBadRequest() {
+        when(bankingService.getCustomerDataById(anyString()))
+                .thenThrow(new CustomerNotFoundException());
+
+        webTestClient.get()
+                .uri("/users/test-user-id")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
