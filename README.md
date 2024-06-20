@@ -1,3 +1,5 @@
+Requirements: Java 17
+
 To run the application:
 1) clone the project
 2) go to org.example.banking-api-project-backend folder
