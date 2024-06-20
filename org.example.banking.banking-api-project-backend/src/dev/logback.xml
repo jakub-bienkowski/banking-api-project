@@ -21,7 +21,7 @@
 
     <logger name="org.example.banking.bankingapi" level="INFO" />
     <root level="INFO">
-        <appender-ref ref="LOGFILE" />
+        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>

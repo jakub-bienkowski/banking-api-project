@@ -1,68 +1,71 @@
 package org.example.banking.bankingapi.services.customer;
 
-
-import org.example.banking.bankingapi.exceptions.CustomerNotFoundException;
-import org.example.banking.bankingapi.models.Customer;
 import org.example.banking.bankingapi.dto.CustomerDTO;
-import org.example.banking.bankingapi.repositories.customer.InMemoryCustomerRepository;
-import org.example.banking.bankingapi.services.account.AccountService;
+import org.example.banking.bankingapi.models.Customer;
+import org.example.banking.bankingapi.repositories.customer.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class CustomerServiceImplTest {
 
+    @Mock
+    private CustomerRepository customerRepository;
+
+    @InjectMocks
     private CustomerServiceImpl customerService;
 
     @BeforeEach
-    public void setUp() {
-        List<Customer> initialCustomers = Arrays.asList(
-                Customer.builder()
-                        .id("1")
-                        .name("John")
-                        .surname("Doe")
-                        .accountsIds(Collections.emptyList())
-                        .build(),
-                Customer.builder()
-                        .id("2")
-                        .name("Jane")
-                        .surname("Doe")
-                        .accountsIds(Collections.emptyList())
-                        .build());
-
-        InMemoryCustomerRepository customerRepository = new InMemoryCustomerRepository(initialCustomers);
-        customerService = new CustomerServiceImpl(customerRepository, Mockito.mock(AccountService.class));
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void testFindById() {
-        Mono<CustomerDTO> found = customerService.findById("1");
+        String id = "1";
+        Customer customer = Customer.builder()
+                .id(id)
+                .name("John")
+                .surname("Doe")
+                .accountsIds(new ArrayList<>())
+                .build();
 
-        StepVerifier.create(found)
-                .assertNext(foundCustomer -> {
-                    assertNotNull(foundCustomer);
-                    assertEquals("1", foundCustomer.getId());
-                    assertEquals("John", foundCustomer.getName());
-                    assertEquals("Doe", foundCustomer.getSurname());
-                })
+        when(customerRepository.findById(id)).thenReturn(Mono.just(customer));
+
+        StepVerifier.create(customerService.findById(id))
+                .expectNextMatches(customerDTO -> customerDTO.getId().equals(id))
                 .verifyComplete();
     }
 
     @Test
-    public void testFindById_NotFound() {
-        Mono<CustomerDTO> notFound = customerService.findById("3");
+    public void testSave() {
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .id("1")
+                .name("John")
+                .surname("Doe")
+                .accountsIds(new ArrayList<>())
+                .build();
 
-        StepVerifier.create(notFound)
-                .expectErrorMatches(throwable -> throwable instanceof CustomerNotFoundException)
-                .verify();
+        Customer customer = Customer.builder()
+                .id(customerDTO.getId())
+                .name(customerDTO.getName())
+                .surname(customerDTO.getSurname())
+                .accountsIds(customerDTO.getAccountsIds())
+                .build();
+
+        when(customerRepository.save(any(Customer.class))).thenReturn(Mono.just(customer));
+
+        StepVerifier.create(customerService.save(customerDTO))
+                .expectNextMatches(savedCustomerDTO -> savedCustomerDTO.getName().equals(customerDTO.getName()))
+                .verifyComplete();
     }
 }

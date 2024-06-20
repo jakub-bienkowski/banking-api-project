@@ -3,6 +3,7 @@ package org.example.banking.bankingapi.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.example.banking.bankingapi.models.Account;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class CustomerDTO {
     private final String id;
     private final String name;
     private final String surname;
+
+    @Setter
     private List<AccountDTO> accounts;
 
     @JsonIgnore

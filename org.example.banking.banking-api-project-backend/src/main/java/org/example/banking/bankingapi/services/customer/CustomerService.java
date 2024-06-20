@@ -6,6 +6,5 @@ import reactor.core.publisher.Mono;
 public interface CustomerService {
 
     Mono<CustomerDTO> findById(String customerId);
-    Mono<CustomerDTO> retrieveUserData(String userId);
     Mono<CustomerDTO> save(CustomerDTO customer);
 }

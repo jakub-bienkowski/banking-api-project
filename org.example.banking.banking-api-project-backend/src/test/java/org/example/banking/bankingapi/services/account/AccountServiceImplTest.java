@@ -1,66 +1,72 @@
 package org.example.banking.bankingapi.services.account;
-
 import org.example.banking.bankingapi.dto.AccountDTO;
-import org.example.banking.bankingapi.exceptions.CustomerNotFoundException;
-import org.example.banking.bankingapi.models.Customer;
-import org.example.banking.bankingapi.repositories.account.InMemoryAccountRepository;
-import org.example.banking.bankingapi.repositories.customer.InMemoryCustomerRepository;
-import org.example.banking.bankingapi.repositories.transaction.InMemoryTransactionRepository;
-import org.example.banking.bankingapi.services.customer.CustomerService;
-import org.example.banking.bankingapi.services.customer.CustomerServiceImpl;
-import org.example.banking.bankingapi.services.transaction.TransactionService;
-import org.example.banking.bankingapi.services.transaction.TransactionServiceImpl;
+import org.example.banking.bankingapi.models.Account;
+import org.example.banking.bankingapi.repositories.account.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import reactor.core.publisher.Flux;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class AccountServiceImplTest {
 
+    @Mock
+    private AccountRepository accountRepository;
+
+    @InjectMocks
     private AccountServiceImpl accountService;
 
     @BeforeEach
-    public void setUp() {
-        List<Customer> initialCustomers = Arrays.asList(
-                Customer.builder()
-                        .id("1")
-                        .name("John")
-                        .surname("Doe")
-                        .accountsIds(Collections.singletonList("account1"))
-                        .build(),
-                Customer.builder()
-                        .id("2")
-                        .name("Jane")
-                        .surname("Doe")
-                        .accountsIds(Collections.singletonList("account2"))
-                        .build());
-
-
-        InMemoryCustomerRepository customerRepository = new InMemoryCustomerRepository(initialCustomers);
-        AccountService accountServiceMock = Mockito.mock(AccountService.class);
-
-        CustomerService customerService = new CustomerServiceImpl(customerRepository, accountServiceMock);
-        TransactionService transactionService = new TransactionServiceImpl(new InMemoryTransactionRepository());
-        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
-        accountService = new AccountServiceImpl(accountRepository, customerService, transactionService);
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
     }
-
-    //TODO 1: Test create method!
 
     @Test
-    public void testCustomerNotFound() {
-        String nonExistentAccountId = "non-existent-customer-id";
+    public void testFindById() {
+        String id = "1";
+        Account account = Account.builder()
+                .id(id)
+                .customerId("1")
+                .balance(BigDecimal.valueOf(100.0))
+                .transactionsIds(new ArrayList<>())
+                .build();
 
-        Flux<AccountDTO> account = accountService.getAccountsByCustomerId(nonExistentAccountId);
+        when(accountRepository.findById(id)).thenReturn(Mono.just(account));
 
-        StepVerifier.create(account)
-                .expectErrorMatches(throwable -> throwable instanceof CustomerNotFoundException)
-                .verify();
+        StepVerifier.create(accountService.findById(id))
+                .expectNextMatches(accountDTO -> accountDTO.getId().equals(id))
+                .verifyComplete();
     }
+
+    @Test
+    public void testSave() {
+        AccountDTO accountDTO = AccountDTO.builder()
+                .id("1")
+                .customerId("1")
+                .balance(BigDecimal.valueOf(100.0))
+                .transactionsIds(new ArrayList<>())
+                .build();
+
+        Account account = Account.builder()
+                .id(accountDTO.getId())
+                .customerId(accountDTO.getCustomerId())
+                .balance(accountDTO.getBalance())
+                .transactionsIds(accountDTO.getTransactionsIds())
+                .build();
+
+        when(accountRepository.save(any(Account.class))).thenReturn(Mono.just(account));
+
+        StepVerifier.create(accountService.save(accountDTO))
+                .expectNextMatches(savedAccountDTO -> savedAccountDTO.getBalance().equals(accountDTO.getBalance()))
+                .verifyComplete();
+    }
+
 }

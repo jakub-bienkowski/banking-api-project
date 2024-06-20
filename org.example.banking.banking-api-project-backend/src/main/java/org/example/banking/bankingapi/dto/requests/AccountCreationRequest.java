@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
-public class AddAccountRequest {
+public class AccountCreationRequest {
 
     @Nonnull
     private final String customerId;
