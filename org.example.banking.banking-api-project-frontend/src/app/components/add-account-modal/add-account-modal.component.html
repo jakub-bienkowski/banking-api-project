@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>{{ 'texts.addAccount' | translate }}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>{{ 'texts.initialCredit' | translate }}</mat-label>
+    <input matInput [(ngModel)]="initialCredit" type="number">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onSave()">{{ 'texts.save' | translate }}</button>
+  <button mat-button (click)="onClose()">{{ 'texts.close' | translate }}</button>
+</div>

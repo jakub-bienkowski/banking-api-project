@@ -37,7 +37,7 @@ public class AccountsControllerTest {
                 .thenReturn(Mono.just(AccountDTO.builder().id("1").build()));
 
         webTestClient.post()
-                .uri("/accounts/add")
+                .uri("/api/accounts/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -55,7 +55,7 @@ public class AccountsControllerTest {
                 .thenThrow(new CustomerNotFoundException());
 
         webTestClient.post()
-                .uri("/accounts/add")
+                .uri("/api/accounts/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()

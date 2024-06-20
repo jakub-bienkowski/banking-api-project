@@ -1,0 +1,16 @@
+{
+  "lang": "en-GB",
+  "texts": {
+    "title": "Banking API",
+    "accountId": "Account ID",
+    "accountBalance": "Account Balance",
+    "allTransactions": "All Transactions",
+    "transactionId": "Transaction ID",
+    "transactionAmount": "Transaction Amount",
+    "transactionTimestamp": "Transaction Timestamp",
+    "addAccount": "Add Account",
+    "initialCredit": "Initial Credit",
+    "save": "Save",
+    "close": "Close"
+  }
+}

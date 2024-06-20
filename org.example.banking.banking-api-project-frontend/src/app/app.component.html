@@ -1,0 +1,67 @@
+<mat-toolbar>
+  <span>{{ 'texts.title' | translate }}</span>
+</mat-toolbar>
+
+<mat-accordion multi="false">
+
+  <ng-container *ngFor="let customer of customers">
+    <mat-expansion-panel hideToggle>
+
+      <mat-expansion-panel-header (click)="loadCustomer(customer.id)">
+        <div class="customer-panel">
+          <mat-panel-title>
+            {{ customer.id }}. {{ customer.name }} {{ customer.surname }}
+          </mat-panel-title>
+          <button mat-button (click)="$event.stopPropagation(); onAddAccount(customer.id)">Add Account</button>
+        </div>
+      </mat-expansion-panel-header>
+
+      <ng-template matExpansionPanelContent>
+        <table mat-table [dataSource]="customerDetails!.accounts" class="mat-elevation-z8">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>{{ 'texts.accountId' | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef>{{ 'texts.accountBalance' | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.balance}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="transactions">
+            <th mat-header-cell *matHeaderCellDef>{{ 'texts.allTransactions' | translate }}</th>
+            <td mat-cell *matCellDef="let account">
+              <table mat-table [dataSource]="account.transactions" class="mat-elevation-z8" *ngIf="account.transactions.length > 0">
+
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'texts.transactionId' | translate }}</th>
+                  <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="balance">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'texts.transactionAmount' | translate }}</th>
+                  <td mat-cell *matCellDef="let element"> {{element.amount}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="transactions">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'texts.transactionTimestamp' | translate }}</th>
+                  <td mat-cell *matCellDef="let element"> {{element.timestamp }} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="accountDisplayColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: accountDisplayColumns;"></tr>
+              </table>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="accountDisplayColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: accountDisplayColumns;"></tr>
+        </table>
+
+      </ng-template>
+
+    </mat-expansion-panel>
+  </ng-container>
+
+</mat-accordion>

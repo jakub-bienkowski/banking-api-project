@@ -26,12 +26,12 @@ public class CustomersControllerTest {
     private BankingService bankingService;
 
     @Test
-    public void testGetUser() {
+    public void testGetCustomer() {
         when(bankingService.getCustomerDataById(anyString()))
                 .thenReturn(Mono.just(CustomerDTO.builder().id("test-user-id").build()));
 
         webTestClient.get()
-                .uri("/users/test-user-id")
+                .uri("/api/customers/test-user-id")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -45,7 +45,7 @@ public class CustomersControllerTest {
                 .thenThrow(new CustomerNotFoundException());
 
         webTestClient.get()
-                .uri("/users/test-user-id")
+                .uri("/api/customers/test-user-id")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
