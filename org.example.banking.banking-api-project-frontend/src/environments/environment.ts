@@ -2,7 +2,7 @@ export const environment = {
 
   production: false,
 
-  basePath: '/api',
+  basePath: '/banking-api/api',
   api: {
     customers: '/customers/',
     accounts: {
