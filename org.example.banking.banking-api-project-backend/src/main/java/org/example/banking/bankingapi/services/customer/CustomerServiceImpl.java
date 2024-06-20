@@ -7,6 +7,7 @@ import org.example.banking.bankingapi.models.Customer;
 import org.example.banking.bankingapi.repositories.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -19,6 +20,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     public CustomerServiceImpl(@Nonnull final CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
+    }
+
+    @Override
+    public Flux<CustomerDTO> getAll() {
+        return this.customerRepository.getAll()
+                .map(this::mapToDto);
     }
 
     @Override

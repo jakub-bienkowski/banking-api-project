@@ -36,6 +36,11 @@ public class BankingServiceImpl implements BankingService {
     }
 
     @Override
+    public Flux<CustomerDTO> getAllCustomers() {
+        return this.customerService.getAll();
+    }
+
+    @Override
     public Mono<CustomerDTO> getCustomerDataById(String customerId) {
         log.debug("Fetching customer data by id: {}", customerId);
 

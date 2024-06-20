@@ -6,6 +6,7 @@ import org.example.banking.bankingapi.models.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -41,4 +42,9 @@ public class InMemoryCustomerRepository implements CustomerRepository {
         return Mono.justOrEmpty(customers.get(customerId));
     }
 
+
+    @Override
+    public Flux<Customer> getAll() {
+        return Flux.fromIterable(this.customers.values());
+    }
 }
