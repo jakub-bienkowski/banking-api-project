@@ -3,15 +3,18 @@ To run the application:
 2) go to org.example.banking-api-project-backend folder
 4) run command "mvn spring-boot:run"
 
-Application configuration is available in src/dev/application.yaml file. Port, base path and customers available in the repository are configurable.
-Logging configuration is available in src/dev/logback.xml. Logs are stored in target/logs folder.
-The application is available only as a REST API. GUI is not implemented.
+Application configuration is available in src/dev/application.yaml file. Port and customers available in the repository are configurable.
+Logging configuration is available in src/dev/logback.xml. Logs are stored in target/logs folder by default.
+The application is available as a REST API or GUI.
+
+GUI is available on "http://localhost:{port}/banking-api/  (It's important to use the "/" at the end!)
+REST API is available on "http://localhost:{port}/banking-api/api
+
 Available endpoints: 
-1) HTTP GET { base_path }/users/{ user_id } -> retrieves user information
-2) HHTP POST  { base_path }/accounts -> saves new accounts
-Request body structure: 
+1) HTTP GET banking-api/api/customers/ -> get all customers
+2) HTTP GET banking-api/api/customers/{user_id} -> retrieves customer accounts and transactions information
+3) HHTP POST banking-api/accounts/add -> saves new accounts with following request body:
 {
 	"customerId": string,
 	"initialCredit: number
-}
 }
